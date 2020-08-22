@@ -1,0 +1,20 @@
+# description
+thm is a shell script that applies colors to a template file.
+
+# usage
+thm theme_name
+
+the theme_name does not include the `.theme` at the end of the file.
+
+# directories
+By default, the config files will be searched for in `$XDG_CONFIG_HOME/thm` or `$HOME/.config/thm`.
+The generated files will be placed in either `$XDG_CACHE_HOME/thm` or `$HOME/.cache/thm`. This can
+be changed by setting the environment variables `THM_CONFIG_DIR` and `THM_DEST_DIR`. The dest dir
+is cleared while running.
+
+# inside config directory
+The themes directory holds shell scripts defining the colors. These files should end with `.theme`
+if they should be usable with thm. The templates directory holds files for generating the themes.
+These files should end with `.template` The scripts directory holds files to be executed after thm
+is finished generating all the files. These files should be executable in order for thm to launch
+them. Examples of these files can be found in the examples directory of this repository.
