@@ -12,7 +12,7 @@ hex2rgb() {
 	hex_r=${hex%????}
 	hex_g=${hex#??}
 	hex_g=${hex_g%??}
-	hex_b=${hex%????}
+	hex_b=${hex#????}
 	printf '%d,%d,%d' "0x$hex_r" "0x$hex_g" "0x$hex_b"
 }
 
