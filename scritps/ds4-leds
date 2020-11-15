@@ -1,0 +1,37 @@
+#!/bin/sh
+# Change the LEDs of a DualShock4 Controller
+
+usage() {
+	printf '%s\n' "usage: ${0##*/} hex|rgb color" \
+	              "${0##*/} accepts hex values (ffffff) or rgb values (255,255,255)"
+}
+
+[ "$2" ] || { usage; exit 1; }
+
+hex2rgb() {
+	hex=$1
+	hex_r=${hex%????}
+	hex_g=${hex#??}; hex_g=${hex_g%??}
+	hex_b=${hex#????}
+	printf '%d,%d,%d' "0x$hex_r" "0x$hex_g" "0x$hex_b"
+}
+
+ds4leds() {
+	vendorid="054C"
+	productid="05C4"
+	led_path="/sys/class/leds"
+
+	IFS=, read -r rgb_r rgb_g rgb_b <<-EOF
+	$1
+	EOF
+
+	printf '%s' "$rgb_r" | tee "$led_path/"*"$vendorid:$productid"*":red/brightness" > /dev/null
+	printf '%s' "$rgb_g" | tee "$led_path/"*"$vendorid:$productid"*":green/brightness" > /dev/null
+	printf '%s' "$rgb_b" | tee "$led_path/"*"$vendorid:$productid"*":blue/brightness" > /dev/null
+}
+
+case $1 in
+	hex      ) ds4leds "$(hex2rgb "$2")" ;;
+	rgb      ) ds4leds "$2" ;;
+	*h|*help ) usage; exit 0 ;;
+esac
