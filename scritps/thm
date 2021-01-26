@@ -113,6 +113,58 @@ do
 	" "$t" > "${dest_dir}/${file_name}"
 done
 
+# This allows for different configuration for different color schemes.
+# Configuration for one theme may not work very well for another theme. To use
+# this set theme_type in the theme file to any string and place theme specific
+# configuration in `${XDG_CONFIG_HOME:-$HOME/.config}/thm/templates/$theme_type`.
+# If not specified, only templates in the base template directory will be generated.
+# This will overwrite previously generated template files.
+[ "$theme_type" ] && [ -d "${conf_dir}/templates/$theme_type" ] && \
+	for t in "${conf_dir}/templates/$theme_type/"*".template"
+	do
+		file_name=${t##*/}
+		file_name=${file_name%.template}
+
+		sed "
+		s/{bg_color}/$bg_color/g
+		s/{fg_color}/$fg_color/g
+		s/{color0}/$color0/g
+		s/{color1}/$color1/g
+		s/{color2}/$color2/g
+		s/{color3}/$color3/g
+		s/{color4}/$color4/g
+		s/{color5}/$color5/g
+		s/{color6}/$color6/g
+		s/{color7}/$color7/g
+		s/{color8}/$color8/g
+		s/{color9}/$color9/g
+		s/{color10}/$color10/g
+		s/{color11}/$color11/g
+		s/{color12}/$color12/g
+		s/{color13}/$color13/g
+		s/{color14}/$color14/g
+		s/{color15}/$color15/g
+		s/{bg_color.rgb}/$bg_color_rgb/g
+		s/{fg_color.rgb}/$fg_color_rgb/g
+		s/{color0.rgb}/$color0_rgb/g
+		s/{color1.rgb}/$color1_rgb/g
+		s/{color2.rgb}/$color2_rgb/g
+		s/{color3.rgb}/$color3_rgb/g
+		s/{color4.rgb}/$color4_rgb/g
+		s/{color5.rgb}/$color5_rgb/g
+		s/{color6.rgb}/$color6_rgb/g
+		s/{color7.rgb}/$color7_rgb/g
+		s/{color8.rgb}/$color8_rgb/g
+		s/{color9.rgb}/$color9_rgb/g
+		s/{color10.rgb}/$color10_rgb/g
+		s/{color11.rgb}/$color11_rgb/g
+		s/{color12.rgb}/$color12_rgb/g
+		s/{color13.rgb}/$color13_rgb/g
+		s/{color14.rgb}/$color14_rgb/g
+		s/{color15.rgb}/$color15_rgb/g
+		" "$t" > "${dest_dir}/${file_name}"
+	done
+
 # Run extra user scripts
 [ -d "$conf_dir/scripts" ] || exit 0
 for i in "$conf_dir/scripts/"*

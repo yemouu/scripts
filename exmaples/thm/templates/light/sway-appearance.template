@@ -4,7 +4,16 @@ client.focused_inactive	#{color4}	#{color12}	#{bg_color}	#{color4}	#{color4}
 client.unfocused	#{color8}	#{color8}	#{bg_color}	#{color8}	#{color8}
 client.urgent		#{color1}	#{color9}	#{bg_color}	#{color1}	#{color1}
 
-# set variables
+default_border normal 2
+default_floating_border normal 2
+titlebar_border_thickness 2
+
+font pango:monospace 10
+
+hide_edge_borders both
+
+title_align center
+
 set {
 	$bg_color {bg_color}
 	$fg_color {fg_color}
