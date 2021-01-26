@@ -13,12 +13,12 @@
 usage() {
 	printf '%s\n' "usage: ${0##*/} [options]" \
 	              "options:" \
-	              "  -c - copy the color code to the clipboard" \
+	              "  -c - copy to clipboard" \
 	              "  -h - display usage statement" \
-	              "  -n - send a notification with the color code" \
-	              "  -o - open an image with the color and the color code" \
-	              "  -r - display the color code as an rgb value" \
-	              "  -x - display the color code as a hexcode value (default)"
+	              "  -n - send a notification with the color" \
+	              "  -o - open the color as an image" \
+	              "  -r - display the color as an rgb value" \
+	              "  -x - display the color as a hexcode value (default)"
 }
 
 # Parse arguments
@@ -62,7 +62,7 @@ done
 [ $color_type ] || color_type="hex"
 
 # Get a screenshot of the pixel
-grim -s 1 -g "$(slurp -p)" "/tmp/${0##*/}/temp.png"
+grim -s 1 -g "$(slurp -b 00000000 -s 00000000 -w -1 -p)" "/tmp/${0##*/}/temp.png"
 
 case $color_type in
 	hex ) color=$(convert "/tmp/${0##*/}/temp.png" -format "%[hex:p]\n" info:) ;;
