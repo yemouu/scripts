@@ -39,7 +39,8 @@ usage() {
 	              "  -a - record desktop audio" \
 	              "  -c - copy image to clipboard" \
 	              "  -h - display this message" \
-	              "  -m - record microphone audio"
+	              "  -m - record microphone audio" \
+	              "  -o - output to use"
 }
 
 # Determine the action to run
@@ -53,6 +54,7 @@ esac
 shift
 
 # Determine options to run with based on arguments
+# (I need to stop)
 for flag in "$@"
 do
 	# Make sure arguments start with '-' and are atleast 2 characters long
@@ -64,19 +66,22 @@ do
 	esac
 
 	# Split arguments to be 1 character long and determine options to use
-	flag=${flag#-}
-	while [ "$flag" ]
+	args=${flag#-}
+	while [ "$args" ]
 	do
-		a=${flag%${flag#?}}
+		a=${args%${args#?}}
 		case $a in
 			a ) desktop_audio=true ;;
 			c ) copy_clipboard=true ;;
 			h ) usage; exit 0 ;;
 			m ) microphone=true ;;
+			o ) aargs=$*
+			    output=${aargs##*${flag}}; output=${output#\ }; output=${output%%\ *}
+			    [ "${output}" ] || printf '%s\n' "${0##*/}: -o: missing output" 1>&2 ;;
 			* ) printf '%s\n' "${0##*/}: -$a: invalid argument" 1>&2
 			    usage 1>&2; exit 1 ;;
 		esac
-		flag=${flag#?}
+		args=${args#?}
 	done
 done
 unset args arg
@@ -140,7 +145,8 @@ scr_pic() {
 	filename="$scr_pic_dir/$pic_filename"
 
 	# Get the geometry of the screenshot from the user and take the screenshot
-	grim -g "$(slurp)"  "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
+	if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp)"; fi
+	grim "$@" "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
 
 	# Copy the image to the system clipboard
 	$copy_clipboard && { wl-copy  <"$filename" > "$SCR_CACHE_DIR/copy.log" 2>&1; }
@@ -178,9 +184,10 @@ scr_rec() {
 	# Intercept Ctrl+C and exit wf-recorder instead of the script
 	trap 'kill -2 $rec_pid' INT
 
+	if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp)"; fi
 	# Word splitting is favorable here
 	# shellcheck disable=SC2086
-	wf-recorder $args -g "$(slurp)" -f "$filename" > "$SCR_CACHE_DIR/rec.log" 2>&1 &
+	wf-recorder $args "$@" -f "$filename" > "$SCR_CACHE_DIR/rec.log" 2>&1 &
 	rec_pid=$!
 	printf '%s' "Press Ctrl+C to stop recording. " 1>&2
 	wait $rec_pid
