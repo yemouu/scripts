@@ -18,13 +18,16 @@ hex2rgb() {
 
 ds4leds() {
 	vendorid="054C"
-	productid="05C4"
 	led_path="/sys/class/leds"
+
+	case $led_path/* in
+		"$led_path/"*"$vendorid:05C4"*":global" ) productid="05C4" ;;
+		"$led_path/"*"$vendorid:0BA0"*":global" ) productid="0BA0" ;;
+	esac
 
 	IFS=, read -r rgb_r rgb_g rgb_b <<-EOF
 	$1
 	EOF
-
 	printf '%s' "$rgb_r" | tee "$led_path/"*"$vendorid:$productid"*":red/brightness" > /dev/null
 	printf '%s' "$rgb_g" | tee "$led_path/"*"$vendorid:$productid"*":green/brightness" > /dev/null
 	printf '%s' "$rgb_b" | tee "$led_path/"*"$vendorid:$productid"*":blue/brightness" > /dev/null
