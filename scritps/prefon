@@ -123,9 +123,9 @@ read_input() {
 
 case $PREFON_ACTION in
 	file  ) [ -e "$PREFON_FILE" ] || { info e "'$PREFON_FILE' does not exist"; exit 1; }
-		wa ;;
+		read_input ;;
 	stdin ) [ -e /dev/stdin ] || { info e "/dev/stdin does not exist"; exit 1; }
-		wa ;;
+		read_input ;;
 	text  ) [ "$PREFON_TEXT" ] || { info e "string not provided"; exit 1; }
 		generate_image "$PREFON_TEXT" ;;
 	*     ) info e invalid action: $PREFON_ACTION; exit 1 ;;
