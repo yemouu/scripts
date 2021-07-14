@@ -1,5 +1,5 @@
 #!/bin/sh
-# shellcheck disable=SC1090,SC2154
+# shellcheck disable=SC1090,SC1091,SC2154
 
 # SC1090 & SC2154
 # The files sourced are user generated files that should contain the needed
@@ -115,9 +115,9 @@ scr_aud() {
 	[ "$microphone" ] && [ "$desktop_audio" ] && \
 		{ args="$args -filter_complex amix=inputs=2"; }
 
-	# Pressing Ctrl+C will exit the script instead of just wf-recorder.
-	# Intercept Ctrl+C and exit wf-recorder instead of the script
-	trap 'kill -2 $aud_pid' INT
+	# Pressing Ctrl+C will exit the script instead of just ffmpeg.
+	# Intercept Ctrl+C and do nothing.
+	trap '' INT
 
 	# shellcheck disable=SC2086
 	# Word splitting is favorable here
@@ -182,7 +182,7 @@ scr_rec() {
 
 	# Pressing Ctrl+C will exit the script instead of just wf-recorder.
 	# Intercept Ctrl+C and exit wf-recorder instead of the script
-	trap 'kill -2 $rec_pid' INT
+	trap '' INT
 
 	if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp)"; fi
 	# Word splitting is favorable here
