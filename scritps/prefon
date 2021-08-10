@@ -2,28 +2,28 @@
 # Script to preview fonts
 
 usage() {
-	printf '%b\n' "${0##*/} [-F FILE | -S | -t STRING] [OPTIONS]"                        \
-	              "actions:"                                                             \
-	              "\t-F FILE   - read from file"                                         \
-	              "\t-S        - read from stdin"                                        \
-	              "\t-t STRING - use a string"                                           \
-	              "\noptions:"                                                           \
-	              "\t-b SIZE   - border size"                                            \
-	              "\t-c COLORS - set the color of the text and background"               \
-	              "\t-f FONT   - which font to preview"                                  \
-	              "\t-h        - display this message"                                   \
-	              "\t-i        - do not generate an inverse image"                       \
-	              "\t-o FILE   - output file for the generated image"                    \
-	              "\t-s SIZE   - size of the font"                                       \
-	              "\ndefault values:"                                                    \
-	              "These values can be set before execution to change default values"    \
-	              "\tPREFON_ACTION=text (file, stdin, or text)"                          \
-	              "\tPREFON_BORDER_SIZE=16"                                              \
-	              "\tPREFON_COLORS=\"000000,ffffff\""                                    \
-	              "\tPREFON_FONT=\"monospace\""                                          \
-	              "\tPREFON_OUTPUT=\"/tmp/prefon.png\""                                  \
-	              "\tPREFON_SIZE=16"                                                     \
-	              "\tPREFON_TEXT=\"The quick brown fox jumps\\\n    over the lazy dog\"" \
+	printf '%b\n' "${0##*/} [-F FILE | -S | -t STRING] [OPTIONS]"                         \
+	              "actions:"                                                              \
+	              "\t-F FILE   - read from file"                                          \
+	              "\t-S        - read from stdin"                                         \
+	              "\t-t STRING - use a string"                                            \
+	              "\noptions:"                                                            \
+	              "\t-b SIZE   - border size"                                             \
+	              "\t-c COLORS - set the color of the text and background"                \
+	              "\t-f FONT   - which font to preview"                                   \
+	              "\t-h        - display this message"                                    \
+	              "\t-i        - generate the inverse image (horizontal, vertical, none)" \
+	              "\t-o FILE   - output file for the generated image"                     \
+	              "\t-s SIZE   - size of the font"                                        \
+	              "\ndefault values:"                                                     \
+	              "These values can be set before execution to change default values"     \
+	              "\tPREFON_ACTION=text (file, stdin, or text)"                           \
+	              "\tPREFON_BORDER_SIZE=16"                                               \
+	              "\tPREFON_COLORS=\"000000,ffffff\""                                     \
+	              "\tPREFON_FONT=\"monospace\""                                           \
+	              "\tPREFON_OUTPUT=\"/tmp/prefon.png\""                                   \
+	              "\tPREFON_SIZE=16"                                                      \
+	              "\tPREFON_TEXT=\"The quick brown fox jumps\\\n    over the lazy dog\""  \
 	              "\tPREFON_INVERSE=vertical (horizontal, vertical, none)"
 }
 
