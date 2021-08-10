@@ -24,23 +24,25 @@
 
 # Source the configuration file
 # A sample configuration can be found in my dotfiles at:
-# https://github.com/yemouu/setup/blob/master/root/home/cfg/scr/config.sh
-. "$SCR_CFG_DIR/config.sh" || \
-	{ printf '%s\n' "${0##*/}: failed to source $SCR_CONFIG_DIR/config.sh" 1>&2; exit 1; }
+# https://github.com/yemouu/setup/blob/master/home/cfg/scr/config.sh
+. "$SCR_CFG_DIR/config.sh" || {
+	printf '%s\n' "${0##*/}: failed to source $SCR_CFG_DIR/config.sh" 1>&2; exit 1
+}
 
 # Usage statement for the script
 usage() {
 	printf '%s\n' "usage: ${0##*/} action [options]" \
 	              "actions:" \
-	              "  aud - audio" \
-	              "  pic - picture" \
-	              "  rec - record" \
+	              "\taud - audio" \
+	              "\tpic - picture" \
+	              "\trec - record" \
 	              "options:" \
-	              "  -a - record desktop audio" \
-	              "  -c - copy image to clipboard" \
-	              "  -h - display this message" \
-	              "  -m - record microphone audio" \
-	              "  -o - output to use"
+	              "\t-a - record desktop audio (aud,rec)" \
+	              "\t-c - copy image to clipboard (pic)" \
+	              "\t-h - display this message" \
+	              "\t-m - record microphone audio (aud,rec)" \
+	              "\t-o - output to use (pic,rec)" \
+	              "\t-d - all displays (pic)"
 }
 
 # Determine the action to run
@@ -73,6 +75,7 @@ do
 		case $a in
 			a ) desktop_audio=true ;;
 			c ) copy_clipboard=true ;;
+			d ) output=all ;; # Kinda redundent lol
 			h ) usage; exit 0 ;;
 			m ) microphone=true ;;
 			o ) aargs=$*
@@ -144,9 +147,16 @@ scr_pic() {
 
 	filename="$scr_pic_dir/$pic_filename"
 
-	# Get the geometry of the screenshot from the user and take the screenshot
-	if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp)"; fi
-	grim "$@" "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
+	if [ "$output" = "all" ]
+	then
+		# Grim will screenshot all monitors by default
+		grim "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
+	else
+		# Get the geometry of the screenshot from the user and take the screenshot
+		if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp)"; fi
+		grim "$@" "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
+	fi
+
 
 	# Copy the image to the system clipboard
 	$copy_clipboard && { wl-copy  <"$filename" > "$SCR_CACHE_DIR/copy.log" 2>&1; }
@@ -187,7 +197,7 @@ scr_rec() {
 	if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp)"; fi
 	# Word splitting is favorable here
 	# shellcheck disable=SC2086
-	wf-recorder $args "$@" -f "$filename" > "$SCR_CACHE_DIR/rec.log" 2>&1 &
+	wf-recorder $args $rec_extraflags "$@" -f "$filename" > "$SCR_CACHE_DIR/rec.log" 2>&1 &
 	rec_pid=$!
 	printf '%s' "Press Ctrl+C to stop recording. " 1>&2
 	wait $rec_pid
@@ -206,3 +216,17 @@ scr_rec() {
 }
 
 $action
+
+# Run post scripts
+# Scripts in the directory `$SCR_CFG_DIR/scripts` will
+# take in `$action` as `$1` and `$filename` as `$2`.
+# Sample scripts can be found in my dotfiles at:
+# https://github.com/yemouu/setup/blob/master/home/cfg/scr/scripts
+for i in "$SCR_CFG_DIR/scripts/"*
+do
+	[ -x "$i" ] && {
+		printf '%s\n' "# $i --- START" >> "$SCR_CACHE_DIR/scripts.log"
+		$i "$action" "$filename" > "$SCR_CACHE_DIR/scripts.log" 2>&1
+		printf '%s\n' "# $i --- END" >> "$SCR_CACHE_DIR/scripts.log"
+	}
+done
