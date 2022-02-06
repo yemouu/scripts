@@ -33,8 +33,7 @@ info() {
 		w ) prefix=WARNING ;;
 		e ) prefix=ERROR ;;
 		* ) printf '%s\n' "sus!" 1>&2; exit 1 ;;
-	esac
-	shift
+	esac; shift
 
 	printf "${0##*/}: $prefix: %b\n" "$*" 1>&2
 }
@@ -58,9 +57,11 @@ do
 		-* ) flag=${1#-}; shift ;;
 		*  ) shift; continue ;;
 	esac
+
 	while [ "$flag" ]
 	do
 		arg=${flag%${flag#?}}
+
 		case $arg in
 			F ) PREFON_ACTION="file"; PREFON_FILE=$1; shift ;;
 			S ) PREFON_ACTION=stdin; PREFON_FILE=/dev/stdin ;;
@@ -72,35 +73,50 @@ do
 			o ) PREFON_OUTPUT=$1; shift ;;
 			s ) PREFON_SIZE=$1; shift ;;
 			t ) PREFON_ACTION=text; PREFON_TEXT=$1; shift ;;
-			* ) printf '%s\n' "${0##*/}: -$arg: invalid argument" 1>&2; usage 1>&2; exit 1 ;;
+			* ) printf '%s\n' "${0##*/}: -$arg: invalid argument" 1>&2
+			    usage 1>&2; exit 1 ;;
 		esac
+
 		flag=${flag#?}
 	done
 done
 
-generate_image() {
-	_gen_img() {
-		convert -background "#$2" -bordercolor "#$2" -border "$PREFON_BORDER_SIZE" \
-			pango:"<span foreground=\"#$1\" font_desc=\"$PREFON_FONT $PREFON_SIZE\">$4</span>" "$3"
-	}
+_gen_img() {
+	convert -background "#$2" -bordercolor "#$2" -border "$PREFON_BORDER_SIZE" \
+		pango:"<span foreground=\"#$1\" font_desc=\"$PREFON_FONT $PREFON_SIZE\">$4</span>" "$3"
+}
 
+_output_file() {
+	while IFS= read -r line
+	do printf '%s\n' "$line"
+	done < "$PREFON_FILE"
+}
+
+generate_image() {
 	fgcolor=${PREFON_COLORS%,*}
 	bgcolor=${PREFON_COLORS#*,}
 
-	_gen_img "$fgcolor" "$bgcolor" "$PREFON_OUTPUT" "$1" || { info e failed to generate image; exit 1; }
+	_gen_img "$fgcolor" "$bgcolor" "$PREFON_OUTPUT" "$1" || {
+		info e failed to generate image
+		exit 1
+	}
 
 	[ "$PREFON_INVERSE" != "none" ] && {
 		inverse="${PREFON_OUTPUT%.*}"
 		inverse="${inverse}-inverse.${PREFON_OUTPUT##*.}"
 
-		_gen_img "$bgcolor" "$fgcolor" "$inverse" "$1" || { info e failed to generate image; exit 1; }
+		_gen_img "$bgcolor" "$fgcolor" "$inverse" "$1" || {
+			info e failed to generate image
+			exit 1
+		}
 
 		case $PREFON_INVERSE in
 			horizontal ) convert "$PREFON_OUTPUT" "$inverse" +append "$PREFON_OUTPUT" \
 					|| { info e failed to generate image; exit 1; } ;;
 			vertical   ) convert "$PREFON_OUTPUT" "$inverse" -append "$PREFON_OUTPUT" \
 					|| { info e failed to generate image; exit 1; } ;;
-			* ) info e "${PREFON_INVERSE}: is not a valid value for PREFON_INVERSE"; exit 1 ;;
+			* ) info e "${PREFON_INVERSE}: is not a valid value for PREFON_INVERSE"
+			    exit 1 ;;
 		esac
 
 		rm "$inverse" || info w failed to remove temporary file: "${inverse}"
@@ -110,23 +126,22 @@ generate_image() {
 }
 
 read_input() {
-	_output_file() {
-		while IFS= read -r line
-		do
-			printf '%s\n' "$line"
-		done < "$PREFON_FILE"
-	}
-
 	input="$(_output_file)"
 	generate_image "$input"
 }
 
 case $PREFON_ACTION in
-	file  ) [ -e "$PREFON_FILE" ] || { info e "'$PREFON_FILE' does not exist"; exit 1; }
-		read_input ;;
-	stdin ) [ -e /dev/stdin ] || { info e "/dev/stdin does not exist"; exit 1; }
-		read_input ;;
-	text  ) [ "$PREFON_TEXT" ] || { info e "string not provided"; exit 1; }
-		generate_image "$PREFON_TEXT" ;;
-	*     ) info e invalid action: $PREFON_ACTION; exit 1 ;;
+	file )
+		[ -e "$PREFON_FILE" ] || { info e "'$PREFON_FILE' does not exist"; exit 1; }
+		read_input
+	;;
+	stdin )
+		[ -e /dev/stdin ] || { info e "/dev/stdin does not exist"; exit 1; }
+		read_input
+	;;
+	text )
+		[ "$PREFON_TEXT" ] || { info e "string not provided"; exit 1; }
+		generate_image "$PREFON_TEXT"
+	;;
+	* ) info e invalid action: $PREFON_ACTION; exit 1 ;;
 esac

@@ -12,6 +12,7 @@ hex2rgb() {
 	hex_r=${hex%????}
 	hex_g=${hex#??}; hex_g=${hex_g%??}
 	hex_b=${hex#????}
+
 	printf '%d,%d,%d' "0x$hex_r" "0x$hex_g" "0x$hex_b"
 }
 
@@ -19,6 +20,7 @@ hex2rgb() {
 [ "$THM_CONFIG_DIR" ] \
 	&& conf_dir="$THM_CONFIG_DIR" \
 	|| conf_dir="${XDG_CONFIG_HOME:-$HOME/.config}/thm"
+
 [ "$THM_DEST_DIR" ] \
 	&& dest_dir="$THM_DEST_DIR" \
 	|| dest_dir="${XDG_CACHE_HOME:-$HOME/.cache}/thm"
@@ -59,7 +61,7 @@ color14_rgb="$(hex2rgb "$color14")"
 color15_rgb="$(hex2rgb "$color15")"
 
 # Make sure the dest_dir and dest_dir/thm_old exist
-[ -d "$dest_dir/thm_old" ] || { mkdir -p "$dest_dir/thm_old" || err "failed to create $dest_dir/thm_old"; }
+[ -d "$dest_dir/thm_old" ] || mkdir -p "$dest_dir/thm_old"
 
 # Try and empty the dest_dir before populating it
 mv "$dest_dir/"* "$dest_dir/thm_old" 2> /dev/null
@@ -168,6 +170,5 @@ done
 # Run extra user scripts
 [ -d "$conf_dir/scripts" ] || exit 0
 for i in "$conf_dir/scripts/"*
-do
-	[ -x "$i" ] && $i > /dev/null 2>&1 &
+do [ -x "$i" ] && $i > /dev/null 2>&1 &
 done

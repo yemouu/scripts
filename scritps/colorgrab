@@ -22,7 +22,7 @@ usage() {
 }
 
 # Parse arguments
-for flag in "$@"
+for flag
 do
 	# Make sure flag begins with '-' and are atleast two characters long
 	case $flag in
@@ -34,9 +34,11 @@ do
 
 	# Split the flags into individual arguments and set variables
 	flag=${flag#-}
+
 	while [ "$flag" ]
 	do
-		a=${flag%${flag#?}}
+		a=${flag%"${flag#?}"}
+
 		case $a in
 			c ) copy_to_clipboard=true ;;
 			h ) usage; exit 0 ;;
@@ -47,16 +49,13 @@ do
 			* ) printf '%s\n' "${0##*/}: -$a invalid argument" 1>&2
 			    usage 1>&2; exit 1 ;;
 		esac
+
 		flag=${flag#?}
 	done
 done
 
 # Make sure this directory exist before continuing
-[ -d "/tmp/${0##*/}" ] || {
-	mkdir -p "/tmp/${0##*/}" || \
-		printf '%s\n' "${0##*/}: failed to create directory: /tmp/${0##*/}" 1>&2 \
-		exit 1
-}
+[ -d "/tmp/${0##*/}" ] || { mkdir -p "/tmp/${0##*/}" || exit 1; }
 
 # Set color_type if not already set
 [ $color_type ] || color_type="hex"
@@ -66,8 +65,10 @@ grim -s 1 -g "$(slurp -b 00000000 -s 00000000 -w -1 -p)" "/tmp/${0##*/}/temp.png
 
 case $color_type in
 	hex ) color=$(convert "/tmp/${0##*/}/temp.png" -format "%[hex:p]\n" info:) ;;
-	rgb ) color=$(convert "/tmp/${0##*/}/temp.png" -format "%[pixel:p]\n" info:)
-	      color=${color#*(}; color=${color%)*} ;;
+	rgb )
+		color=$(convert "/tmp/${0##*/}/temp.png" -format "%[pixel:p]\n" info:)
+		color=${color#*(}; color=${color%)*}
+	;;
 	*   ) printf '%s\n' "${0##*/}: invalid color_type: $color_type" 1>&2; exit 1 ;;
 esac
 echo "$color"
@@ -83,13 +84,15 @@ echo "$color"
 	[ -f "/tmp/${0##*/}/o$color.png" ] || {
 		case $color_type in
 			hex ) ocolor="#$color" ;;
-			rgb ) ocolor="rgb($color)";;
+			rgb ) ocolor="rgb($color)" ;;
 		esac
+
 		convert -size 150x150 xc:"$ocolor" +size -gravity center \
 		        \( -background white pango:"<span font_family=\"monospace\"
 		        font_weight=\"bold\"> $color </span>" \) \
 		        -composite "/tmp/${0##*/}/o$color.png"
 	}
+
 	xdg-open "/tmp/${0##*/}/o$color.png" > "/tmp/${0##*/}/xdg-open.log" 2>&1 &
 }
 
@@ -98,14 +101,17 @@ echo "$color"
 	[ -f "/tmp/${0##*/}/n$color.png" ] || {
 		case $color_type in
 			hex ) ncolor="#$color"; color_prefix="hex:";;
-			rgb ) ncolor="rgb($color)"
-			      color_r="${color%%,*}"
-			      color_g="${color#*,}"; color_g="${color_g%,*}"
-			      color_b="${color##*,}"
-			      color_rgb="$color_r$color_g$color_b"
-			      color_prefix="rgb:";;
+			rgb )
+				ncolor="rgb($color)"
+				color_r="${color%%,*}"
+				color_g="${color#*,}"; color_g="${color_g%,*}"
+				color_b="${color##*,}"
+				color_rgb="$color_r$color_g$color_b"
+				color_prefix="rgb:";;
 		esac
+
 		convert -size 64x64 xc:"$ncolor" "/tmp/${0##*/}/n$color_rgb.png"
 	}
+
 	notify-send -a "${0##*/}" -i "/tmp/${0##*/}/n$color_rgb.png" "$color_prefix $color"
 }

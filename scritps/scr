@@ -69,9 +69,11 @@ do
 
 	# Split arguments to be 1 character long and determine options to use
 	args=${flag#-}
+
 	while [ "$args" ]
 	do
 		a=${args%${args#?}}
+
 		case $a in
 			a ) desktop_audio=true ;;
 			c ) copy_clipboard=true ;;
@@ -84,6 +86,7 @@ do
 			* ) printf '%s\n' "${0##*/}: -$a: invalid argument" 1>&2
 			    usage 1>&2; exit 1 ;;
 		esac
+
 		args=${args#?}
 	done
 done

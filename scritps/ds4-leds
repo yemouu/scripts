@@ -13,6 +13,7 @@ hex2rgb() {
 	hex_r=${hex%????}
 	hex_g=${hex#??}; hex_g=${hex_g%??}
 	hex_b=${hex#????}
+
 	printf '%d,%d,%d' "0x$hex_r" "0x$hex_g" "0x$hex_b"
 }
 
@@ -25,12 +26,13 @@ ds4leds() {
 		"$led_path/"*"$vendorid:0BA0"*":global" ) productid="0BA0" ;;
 	esac
 
-	IFS=, read -r rgb_r rgb_g rgb_b <<-EOF
+	IFS=, read -r r g b <<-EOF
 	$1
 	EOF
-	printf '%s' "$rgb_r" | tee "$led_path/"*"$vendorid:$productid"*":red/brightness" > /dev/null
-	printf '%s' "$rgb_g" | tee "$led_path/"*"$vendorid:$productid"*":green/brightness" > /dev/null
-	printf '%s' "$rgb_b" | tee "$led_path/"*"$vendorid:$productid"*":blue/brightness" > /dev/null
+
+	printf '%s' "$r" | tee "$led_path/"*"$vendorid:$productid"*":red/brightness" > /dev/null
+	printf '%s' "$g" | tee "$led_path/"*"$vendorid:$productid"*":green/brightness" > /dev/null
+	printf '%s' "$b" | tee "$led_path/"*"$vendorid:$productid"*":blue/brightness" > /dev/null
 }
 
 case $1 in
