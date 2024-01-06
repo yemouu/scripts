@@ -58,7 +58,7 @@ done
 [ -d "/tmp/${0##*/}" ] || { mkdir -p "/tmp/${0##*/}" || exit 1; }
 
 # Set color_type if not already set
-[ $color_type ] || color_type="hex"
+[ "$color_type" ] || color_type="hex"
 
 # Get a screenshot of the pixel
 grim -s 1 -g "$(slurp -b 00000000 -s 00000000 -w -1 -p)" "/tmp/${0##*/}/temp.png"
@@ -71,15 +71,15 @@ case $color_type in
 	;;
 	*   ) printf '%s\n' "${0##*/}: invalid color_type: $color_type" 1>&2; exit 1 ;;
 esac
-echo "$color"
+printf '%s\n' "$color"
 
 # Copy color to clipboard
-[ $copy_to_clipboard ] && {
+[ "$copy_to_clipboard" ] && {
 	wl-copy -n "$color" || printf '%s\n' "${0##*/}: failed to copy color to clipboard" 1>&2
 }
 
 # Open color image in the user's perfered image viewer
-[ $open_color_image ] && {
+[ "$open_color_image" ] && {
 	# Create the color image if it doesn't already exist
 	[ -f "/tmp/${0##*/}/o$color.png" ] || {
 		case $color_type in
@@ -97,7 +97,7 @@ echo "$color"
 }
 
 # Send a notification with an image of the color aswell as the value
-[ $send_notification ] && {
+[ "$send_notification" ] && {
 	[ -f "/tmp/${0##*/}/n$color.png" ] || {
 		case $color_type in
 			hex ) ncolor="#$color"; color_prefix="hex:";;

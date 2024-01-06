@@ -25,6 +25,7 @@
 # Source the configuration file
 # A sample configuration can be found in my dotfiles at:
 # https://github.com/yemouu/setup/blob/master/home/cfg/scr/config.sh
+# TODO: put an example cofiguration in this repo
 . "$SCR_CFG_DIR/config.sh" || {
 	printf '%s\n' "${0##*/}: failed to source $SCR_CFG_DIR/config.sh" 1>&2; exit 1
 }
@@ -72,7 +73,7 @@ do
 
 	while [ "$args" ]
 	do
-		a=${args%${args#?}}
+		a=${args%"${args#?}"}
 
 		case $a in
 			a ) desktop_audio=true ;;
@@ -81,7 +82,7 @@ do
 			h ) usage; exit 0 ;;
 			m ) microphone=true ;;
 			o ) aargs=$*
-			    output=${aargs##*${flag}}; output=${output#\ }; output=${output%%\ *}
+			    output=${aargs##*"${flag}"}; output=${output#\ }; output=${output%%\ *}
 			    [ "${output}" ] || printf '%s\n' "${0##*/}: -o: missing output" 1>&2 ;;
 			* ) printf '%s\n' "${0##*/}: -$a: invalid argument" 1>&2
 			    usage 1>&2; exit 1 ;;
@@ -156,10 +157,10 @@ scr_pic() {
 		grim "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
 	else
 		# Get the geometry of the screenshot from the user and take the screenshot
+		# TODO: add a SLURP_OPTS environment variable to allow the user to customize slurp
 		if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp)"; fi
 		grim "$@" "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
 	fi
-
 
 	# Copy the image to the system clipboard
 	$copy_clipboard && { wl-copy  <"$filename" > "$SCR_CACHE_DIR/copy.log" 2>&1; }
