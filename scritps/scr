@@ -32,7 +32,7 @@
 
 # Usage statement for the script
 usage() {
-	printf '%s\n' "usage: ${0##*/} action [options]" \
+	printf '%b\n' "usage: ${0##*/} action [options]" \
 	              "actions:" \
 	              "\taud - audio" \
 	              "\tpic - picture" \
