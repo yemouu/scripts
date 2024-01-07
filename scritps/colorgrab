@@ -61,7 +61,8 @@ done
 [ "$color_type" ] || color_type="hex"
 
 # Get a screenshot of the pixel
-grim -s 1 -g "$(slurp "${SLURP_ARGS}" -b 00000000 -s 00000000 -w -1 -p)" "/tmp/${0##*/}/temp.png"
+# shellcheck disable=SC2086
+grim -s 1 -g "$(slurp ${SLURP_ARGS} -b 00000000 -s 00000000 -w -1 -p)" "/tmp/${0##*/}/temp.png"
 
 case $color_type in
 	hex ) color=$(convert "/tmp/${0##*/}/temp.png" -format "%[hex:p]\n" info:) ;;

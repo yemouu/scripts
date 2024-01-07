@@ -157,7 +157,8 @@ scr_pic() {
 		grim "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
 	else
 		# Get the geometry of the screenshot from the user and take the screenshot
-		if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp "${SLURP_ARGS}")"; fi
+		# shellcheck disable=SC2086
+		if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp ${SLURP_ARGS})"; fi
 		grim "$@" "$filename" > "$SCR_CACHE_DIR/pic.log" 2>&1
 	fi
 
@@ -197,7 +198,8 @@ scr_rec() {
 	# Intercept Ctrl+C and exit wf-recorder instead of the script
 	trap '' INT
 
-	if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp "${SLURP_ARGS}")"; fi
+	# shellcheck disable=SC2086
+	if [ "$output" ]; then set -- -o "$output"; else set -- -g "$(slurp ${SLURP_ARGS})"; fi
 	# Word splitting is favorable here
 	# shellcheck disable=SC2086
 	wf-recorder $args $rec_extraflags "$@" -f "$filename" > "$SCR_CACHE_DIR/rec.log" 2>&1 &
