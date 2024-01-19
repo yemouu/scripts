@@ -19,7 +19,7 @@ writeScriptBin "colorgrab" (builtins.replaceStrings
     "slurp"
     "convert"
     "wl-copy"
-    "xdg-open"
+    "xdg-open "
     "notify-send"
   ]
   [
@@ -30,7 +30,7 @@ writeScriptBin "colorgrab" (builtins.replaceStrings
     "${slurp}/bin/slurp"
     "${imagemagick}/bin/convert"
     "${wl-clipboard}/bin/wl-copy"
-    "${xdg-utils}/bin/xdg-open"
+    "${xdg-utils}/bin/xdg-open "
     "${libnotify}/bin/notify-send"
   ]
   (builtins.readFile ../scritps/colorgrab)
