@@ -23,7 +23,7 @@ hex2rgb() {
 
 [ "$THM_DEST_DIR" ] \
 	&& dest_dir="$THM_DEST_DIR" \
-	|| dest_dir="${XDG_CACHE_HOME:-$HOME/.cache}/thm"
+	|| dest_dir="${XDG_STATE_HOME:-$HOME/.local/state}/thm"
 
 err() {
 	[ "$*" ] && err_msg="$*" || err_msg="error"
